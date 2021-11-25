@@ -4,19 +4,18 @@
     <string name="title_activity_settings">Settings</string>
 
     <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
+    <string name="messages_header">Notification information</string>
+    <string name="sync_header">Notification information</string>
 
     <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
+    <string name="signature_title">Notification information</string>
+    <string name="reply_title">Display when</string>
 
     <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="sync_title">Work periodicly</string>
+    <string name="attachment_title">Double speed</string>
+    <string name="attachment_summary_on">Double working frequency</string>
+    <string name="attachment_summary_off">Standard operating frequency</string>
 
     <!-- Zasoby dodane -->
     <!-- MainActivity -->
@@ -38,4 +37,8 @@
     <!-- Main menu -->
     <string name="title_settings"> Settings </string>
     <string name="title_exit"> Exit </string>
+
+    <!-- Własne zasoby -->
+    <string name="label_text_info_settings"> Settings ... </string>
+    <string name="label_service_settings"> Service settings: </string>
 </resources>

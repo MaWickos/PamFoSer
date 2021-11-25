@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="pollub.pam.pamfoser">
 
     <application
@@ -23,7 +24,8 @@
 
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/app_name">
+            android:parentActivityName=".MainActivity"
+            android:label="@string/label_settings">
             <!-- Zmiana - zakomentowanie -->
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.MAIN" />-->
@@ -31,6 +33,14 @@
 <!--            </intent-filter>-->
         </activity>
 
+        <!--        Rejestracja serwisu -->
+        <service android:name=".MyForegroundService"
+            android:enabled="true">
+        </service>
+
     </application>
+
+<!--    Dodanie uprawnień -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"></uses-permission>
 
 </manifest>
