@@ -5,14 +5,21 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.IBinder;
 import android.widget.Toast;
 
+// Dodanie
+import android.os.Handler;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MyForegroundService extends Service {
 
@@ -30,13 +37,69 @@ public class MyForegroundService extends Service {
     private String message;
     private Boolean show_time, do_work, double_speed;
 
+    // Określenie co ile sekund będzie wykonywane zadanie cykliczne
+    private final long period = 2000; //2s
+
+    //4.
+    private Context ctx;
+    private Intent notificationIntent;
+    private PendingIntent pendingIntent;
+
+    // 5. Pola dot. licznika
+    private int counter;
+    private Timer timer;
+    private TimerTask timerTask;
+    final Handler handler = new Handler();
+
+    // "Stała"
+    final Runnable runnable = new Runnable() {
+        @Override
+        // Uaktualnienie wyświetlanej notyfikacji
+        public void run() {
+            Notification notification = new Notification.Builder(ctx, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_my_icon)
+                    .setContentTitle(getString(R.string.service_title))
+                    .setShowWhen(show_time)
+                    .setContentText(message + " " + String.valueOf(counter))
+                    .setLargeIcon(BitmapFactory.decodeResource (getResources() , R.drawable.circle ))
+                    .setContentIntent(pendingIntent)
+                    .build();
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.notify(1,notification);
+        }
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Nadanie wartości polom
+        ctx = this;
+        notificationIntent = new Intent(ctx, MainActivity.class);
+        pendingIntent = PendingIntent.getActivity(this,0,notificationIntent,0);
+
+        // Zerowanie licznika, tworzenie obiektu
+        counter = 0;
+
+        timer = new Timer();
+
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                counter++;
+                handler.post(runnable);
+            }
+        };
     }
 
+    // Metoda do zatrzymywania wątku timera i usuwania go
     @Override
     public void onDestroy() {
+        handler.removeCallbacks(runnable);
+        timer.cancel();
+        timer.purge();
+        timer = null;
         super.onDestroy();
     }
 
@@ -59,8 +122,9 @@ public class MyForegroundService extends Service {
 
         createNotificationChannel();
 
-        Intent notificationIntent = new Intent(this,MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,notificationIntent,0);
+//        Usunięcie pól
+//        Intent notificationIntent = new Intent(this,MainActivity.class);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,notificationIntent,0);
 
 
         Notification notification = new Notification.Builder(this,CHANNEL_ID)
@@ -80,14 +144,21 @@ public class MyForegroundService extends Service {
     }
 
     // Metoda obsługująca serwis
+    // Stara metoda doWork, zastąpiąna tą poniżej
+//    private void doWork() {
+//
+//        String info = "Start working..."
+//                +"\n show_time=" + show_time.toString()
+//                +"\n do_work=" + do_work.toString()
+//                +"\n double_speed=" + double_speed.toString();
+//
+//        Toast.makeText(this, info ,Toast.LENGTH_LONG).show();
+//    }
+
     private void doWork() {
-
-        String info = "Start working..."
-                +"\n show_time=" + show_time.toString()
-                +"\n do_work=" + do_work.toString()
-                +"\n double_speed=" + double_speed.toString();
-
-        Toast.makeText(this, info ,Toast.LENGTH_LONG).show();
+        if(do_work) {
+            timer.schedule(timerTask, 0L, double_speed ? period / 2L : period);
+        }
     }
 
     // Metoda do tworzenia kanału notyfikacji
@@ -97,4 +168,6 @@ public class MyForegroundService extends Service {
         NotificationManager manager = getSystemService(NotificationManager.class);
         manager.createNotificationChannel(serviceChannel);
     }
+
+
 }
